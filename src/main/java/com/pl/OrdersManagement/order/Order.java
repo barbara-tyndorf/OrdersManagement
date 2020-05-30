@@ -1,11 +1,16 @@
 package com.pl.OrdersManagement.order;
 
+import com.pl.OrdersManagement.address.Address;
+import com.pl.OrdersManagement.contractor.Contractor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.Currency;
+import java.util.List;
 
 @Entity
 public class Order {
@@ -13,33 +18,58 @@ public class Order {
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    private long id;
-
-    @Min(0)
-    private double price;
+    private String id;
 
     @NotNull
-    private String currency;
-
     @ManyToOne
     private Contractor customer;
+
+    @NotNull
+    @ManyToOne
+    private Contractor carrier;
+
+    @NotNull
+    @OneToMany
+    private List<Address> loadingPlace;
+
+    @NotNull
+    @OneToMany
+    private List<Address> unloadingPlace;
+
+    @Min(0)
+    private BigDecimal customerPrice;
+
+    @NotNull
+    private Currency customerCurrency;
+
+    @Min(0)
+    private BigDecimal carrierPrice;
+
+    @NotNull
+    private Currency carrierCurrency;
+
 
     public Order() {
     }
 
-    public Order(long id, Contractor customer, double price, String currency) {
+    public Order(String id, Contractor customer, Contractor carrier, List<Address> loadingPlace, List<Address> unloadingPlace,
+                 BigDecimal customerPrice, Currency customerCurrency, BigDecimal carrierPrice, Currency carrierCurrency) {
         this.id = id;
         this.customer = customer;
-        this.price = price;
-        this.currency = currency;
+        this.carrier = carrier;
+        this.loadingPlace = loadingPlace;
+        this.unloadingPlace = unloadingPlace;
+        this.customerPrice = customerPrice;
+        this.customerCurrency = customerCurrency;
+        this.carrierPrice = carrierPrice;
+        this.carrierCurrency = carrierCurrency;
     }
 
-    @Id
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -51,29 +81,59 @@ public class Order {
         this.customer = customer;
     }
 
-    public double getPrice() {
-        return price;
+    public Contractor getCarrier() {
+        return carrier;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setCarrier(Contractor carrier) {
+        this.carrier = carrier;
     }
 
-    public String getCurrency() {
-        return currency;
+    public List<Address> getLoadingPlace() {
+        return loadingPlace;
     }
 
-    public void setCurrency(String currenct) {
-        this.currency = currency;
+    public void setLoadingPlace(List<Address> loadingPlace) {
+        this.loadingPlace = loadingPlace;
     }
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", customer=" + customer +
-                ", price=" + price +
-                ", currency=" + currency +
-                '}';
+    public List<Address> getUnloadingPlace() {
+        return unloadingPlace;
+    }
+
+    public void setUnloadingPlace(List<Address> unloadingPlace) {
+        this.unloadingPlace = unloadingPlace;
+    }
+
+    public BigDecimal getCustomerPrice() {
+        return customerPrice;
+    }
+
+    public void setCustomerPrice(String customerPrice) {
+        this.customerPrice = customerPrice;
+    }
+
+    public Currency getCustomerCurrency() {
+        return customerCurrency;
+    }
+
+    public void setCustomerCurrency(String customerCurrency) {
+        this.customerCurrency = customerCurrency;
+    }
+
+    public BigDecimal getCarrierPrice() {
+        return carrierPrice;
+    }
+
+    public void setCarrierPrice(String carrierPrice) {
+        this.carrierPrice = carrierPrice;
+    }
+
+    public Currency getCarrierCurrency() {
+        return carrierCurrency;
+    }
+
+    public void setCarrierCurrency(String carrierCurrency) {
+        this.carrierCurrency = carrierCurrency;
     }
 }

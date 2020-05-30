@@ -1,4 +1,7 @@
-package com.pl.OrdersManagement.order;
+package com.pl.OrdersManagement.contractor;
+
+import com.pl.OrdersManagement.address.Address;
+import com.pl.OrdersManagement.order.Order;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

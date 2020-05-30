@@ -1,4 +1,4 @@
-package com.pl.orders.order;
+package com.pl.OrdersManagement.order;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
