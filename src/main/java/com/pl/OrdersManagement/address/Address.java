@@ -13,6 +13,9 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @ManyToOne
+    private Contractor contractor;
+
     @NotNull
     private String street;
 
@@ -30,8 +33,6 @@ public class Address {
     @Size(min = 2)
     private String countryCode;
 
-    @ManyToOne
-    private Contractor contractor;
 
     public Address() {
     }
