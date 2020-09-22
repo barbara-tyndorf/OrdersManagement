@@ -15,16 +15,4 @@ public class OrdersManagementApplication {
 		SpringApplication.run(OrdersManagementApplication.class, args);
 	}
 
-
-
-
-
-}
-
-
-class cos {
-	public static void main(String[] args) {
-		int c = 12>>2;
-		System.out.println(c);
-	}
 }

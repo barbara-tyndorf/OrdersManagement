@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ErrorsHandler {
+public class AddressErrorHandler {
 
     @ExceptionHandler(NoAddressFoundException.class)
     public ResponseEntity<Object> noLocationsFoundException(NoAddressFoundException e) {

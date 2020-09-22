@@ -2,10 +2,14 @@ package com.pl.OrdersManagement.order;
 
 import com.pl.OrdersManagement.address.Address;
 import com.pl.OrdersManagement.address.AddressRepository;
+import com.pl.OrdersManagement.address.AddressService;
+import com.pl.OrdersManagement.address.errors.NoAddressFoundException;
 import com.pl.OrdersManagement.contractor.Contractor;
 import com.pl.OrdersManagement.contractor.ContractorRepository;
 import com.pl.OrdersManagement.forwarder.Forwarder;
 import com.pl.OrdersManagement.forwarder.ForwarderRepository;
+import com.pl.OrdersManagement.forwarder.ForwarderService;
+import com.pl.OrdersManagement.order.errors.NoOrdersFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,50 +24,47 @@ import java.util.NoSuchElementException;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
-
 	private final ContractorRepository contractorRepository;
-
 	private final AddressRepository addressRepository;
-
+	private final AddressService addressService;
 	private final ForwarderRepository forwarderRepository;
+	private final ForwarderService forwarderService;
 
 	@Autowired
 	public OrderService(OrderRepository orderRepository, ContractorRepository contractorRepository,
-			AddressRepository addressRepository, ForwarderRepository forwarderRepository) {
+			AddressRepository addressRepository, AddressService addressService,
+			ForwarderRepository forwarderRepository,
+			ForwarderService forwarderService) {
 		this.orderRepository = orderRepository;
 		this.contractorRepository = contractorRepository;
 		this.addressRepository = addressRepository;
+		this.addressService = addressService;
 		this.forwarderRepository = forwarderRepository;
+		this.forwarderService = forwarderService;
 	}
 
 	public List<Order> getAll() {
 		return orderRepository.findAll();
 	}
 
-	public Order add(Order order) {
-		return orderRepository.save(order);
+	public Order add(Order order) { return orderRepository.save(order);
 	}
 
 	public Order findById(String id) {
 		return orderRepository.findById(id)
 				.orElseThrow(() -> {
-					throw new NoSuchElementException();
+					throw new NoOrdersFoundException();
 				});
 	}
 
-	public Order remove(String id) {
-		Order order = orderRepository.findById(id)
-				.orElseThrow(() -> {
-					throw new NoSuchElementException();
-				});
+	public String remove(String id) {
+		Order order = findById(id);
 		orderRepository.delete(order);
-		return order;
+		return "Order removed successfully!";
 	}
 
 	public Order updateOrder(String id, Map<String, String> params) {
-		Order order = orderRepository.findById(id).orElseThrow(() -> {
-			throw new NoSuchElementException();
-		});
+		Order order = findById(id);
 
 		if (params.containsKey("customer")) {
 			String name = params.get("customer");
@@ -76,13 +77,24 @@ public class OrderService {
 			order.setCustomer(carrier);
 		}
 		if (params.containsKey("loading_place")) {
-			//TODO pattern for loading_place (array with loading params) and checking every field
-			// if is not empty or equal to already exist and change field if not
-//			addressService.update(params.get("loading_place"));
+			List<Address> loadingPlaces = new ArrayList<>();
+			long loadingPlaceId = Long.parseLong(params.get("loading_place"));
+			Address loadAddress = addressRepository.findById(loadingPlaceId)
+					.orElseThrow(() -> {
+						throw new NoAddressFoundException();
+					});
+			loadingPlaces.add(loadAddress);
+			order.setLoadingPlace(loadingPlaces);
 		}
 		if (params.containsKey("unloading_place")) {
-			//TODO as above
-//			addressService.update(params.get("unloading_place"));
+			List<Address> unloadingPlaces = new ArrayList<>();
+			long unloadingPlaceId = Long.parseLong(params.get("unloading_place"));
+			Address unloadAddress = addressRepository.findById(unloadingPlaceId)
+					.orElseThrow(() -> {
+						throw new NoAddressFoundException();
+					});
+			unloadingPlaces.add(unloadAddress);
+			order.setLoadingPlace(unloadingPlaces);
 		}
 		if (params.containsKey("customerPrice")) {
 			order.setCustomerPrice(BigDecimal.valueOf(Double.parseDouble(params.get("customerPrice"))));
@@ -99,8 +111,10 @@ public class OrderService {
 		if (params.containsKey("carrierCurrency")) {
 			order.setCarrierCurrency(Currency.getInstance(params.get("carrierCurrency")));
 		}
-		if (params.containsKey("forwarder")) {
-//			forwarderService.update();
+		if (params.containsKey("forwarderId")) {
+			long forwarderId = Long.parseLong(params.get("forwarderId"));
+			Forwarder forwarder = forwarderService.findById(forwarderId);
+			order.setForwarder(forwarder);
 		}
 
 		return orderRepository.save(order);
@@ -154,9 +168,13 @@ public class OrderService {
 			Currency currency = Currency.getInstance(params.get("customer_currency"));
 			foundOrders.addAll(orderRepository.findByCarrierCurrency(currency));
 		}
-		if (params.containsKey("forwarder")) {
-			String name = params.get("forwarder");
-			Forwarder forwarder = forwarderRepository.findByFullName(name);
+		if (params.containsKey("forwarderId")) {
+			long id = Long.parseLong(params.get("forwarderId"));
+			Forwarder forwarder = forwarderRepository.findById(id)
+					.orElseThrow(() -> {
+						//TODO NoForwarderFoundException
+						throw new NoSuchElementException();
+					});
 			foundOrders.addAll(orderRepository.findAllByForwarder(forwarder));
 		}
 		return foundOrders;

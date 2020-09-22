@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,7 +28,7 @@ public class OrderController {
 	}
 
 	@PostMapping
-	public Order add (@Valid @RequestBody Order order) {
+	public Order add(@Valid @RequestBody Order order) {
 		return orderService.add(order);
 	}
 
@@ -41,8 +43,18 @@ public class OrderController {
 	}
 
 	@GetMapping("/find")
-	public List<Order> getOrdersBy (@RequestParam(required = false) Map<String, String> params) {
+	public List<Order> getOrdersBy(@RequestParam(required = false) Map<String, String> params) {
 		return orderService.findBy(params);
+	}
+
+	@PutMapping
+	public Order update(@RequestParam String id, Map<String, String> params) {
+		return orderService.updateOrder(id, params);
+	}
+
+	@DeleteMapping
+	public String delete(@RequestParam String id) {
+		return orderService.remove(id);
 	}
 
 }

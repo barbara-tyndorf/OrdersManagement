@@ -26,17 +26,14 @@ public class Forwarder {
 	@OneToMany
 	List<Order> orders;
 
-	BigDecimal profit;
-
 	public Forwarder() {
 	}
 
 	public Forwarder(long id, String fullName,
-			List<Order> orders, BigDecimal profit) {
+			List<Order> orders) {
 		this.id = id;
 		this.fullName = fullName;
 		this.orders = orders;
-		this.profit = profit;
 	}
 
 	public long getId() {
@@ -63,11 +60,4 @@ public class Forwarder {
 		this.orders = orders;
 	}
 
-	public BigDecimal getProfit() {
-		return profit;
-	}
-
-	public void setProfit(BigDecimal profit) {
-		this.profit = profit;
-	}
 }

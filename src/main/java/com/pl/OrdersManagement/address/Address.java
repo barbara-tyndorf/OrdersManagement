@@ -1,10 +1,12 @@
 package com.pl.OrdersManagement.address;
 
-import com.pl.OrdersManagement.contractor.Contractor;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.pl.OrdersManagement.contractor.Contractor;
+import com.pl.OrdersManagement.order.Order;
 
 @Entity
 public class Address {
@@ -13,25 +15,36 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne
-    private Contractor contractor;
+    @NotNull
+    @NotBlank
+    private String name;
 
     @NotNull
+    @NotBlank
     private String street;
 
     private int number;
 
     @NotNull
+    @NotBlank
     @Size(min = 2)
     private String zip;
 
     @NotNull
+    @NotBlank
     @Size(min = 1)
     private String city;
 
     @NotNull
+    @NotBlank
     @Size(min = 2)
     private String countryCode;
+
+    @ManyToOne
+    private Contractor contractor;
+
+    @ManyToOne
+    private Order order;
 
 
     public Address() {
@@ -93,11 +106,11 @@ public class Address {
         this.countryCode = countryCode;
     }
 
-    public Contractor getContractor() {
-        return contractor;
+    public String getName() {
+        return name;
     }
 
-    public void setContractor(Contractor contractor) {
-        this.contractor = contractor;
+    public void setName(String name) {
+        this.name = name;
     }
 }
