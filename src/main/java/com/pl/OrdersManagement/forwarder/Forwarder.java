@@ -7,17 +7,18 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.pl.OrdersManagement.order.Order;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Forwarder {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid")
+	private String id;
 
 	@NotNull
 	@Pattern(regexp = "^[a-zA-Z\\s]*$")
@@ -29,18 +30,18 @@ public class Forwarder {
 	public Forwarder() {
 	}
 
-	public Forwarder(long id, String fullName,
+	public Forwarder(String id, String fullName,
 			List<Order> orders) {
 		this.id = id;
 		this.fullName = fullName;
 		this.orders = orders;
 	}
 
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -1,7 +1,17 @@
 package com.pl.OrdersManagement.contractor;
 
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -15,4 +25,28 @@ public class ContractorController {
         this.contractorService = contractorService;
     }
 
+    @GetMapping
+    public List<Contractor> getAll() {
+        return contractorService.getAll();
+    }
+
+    @PostMapping
+    public Contractor add (@RequestBody Contractor contractor) {
+        return contractorService.add(contractor);
+    }
+
+    @GetMapping("/{id}")
+    public Contractor findById (@PathVariable long id) {
+        return contractorService.findById(id);
+    }
+
+    @GetMapping("find")
+    public List<Contractor> findBy (@RequestParam Map<String, String> params) {
+        return contractorService.findBy(params);
+    }
+
+    @PutMapping
+    public Contractor update (@RequestParam long id, @Valid @RequestParam Map<String, String> params) {
+        return contractorService.updateContractor(id, params);
+    }
 }

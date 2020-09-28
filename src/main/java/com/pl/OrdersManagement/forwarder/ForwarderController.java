@@ -34,9 +34,13 @@ public class ForwarderController {
 	}
 
 	@GetMapping("/{id}")
-	public Forwarder getForwarderById(@Valid @PathVariable long id) {
+	public Forwarder getForwarderById(@PathVariable String id) {
 		return forwarderService.findById(id);
 	}
 
+	@GetMapping("/findByName")
+	public List<Forwarder> getForwarderByName(@RequestBody String name) {
+		return forwarderService.findByFullName(name);
+	}
 
 }

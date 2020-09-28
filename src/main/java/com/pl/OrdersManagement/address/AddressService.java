@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 @Service
 public class AddressService {
 
@@ -59,8 +58,10 @@ public class AddressService {
         }
         if (params.containsKey("contractorName")) {
             String contractorName = params.get("contractorName");
-            Contractor contractor = contractorRepository.findByName(contractorName);
-            foundAddresses.addAll(addressRepository.findAllByContractor(contractor));
+            List<Contractor> contractors = contractorRepository.findByName(contractorName);
+            for (Contractor c: contractors) {
+                foundAddresses.addAll(addressRepository.findAllByContractor(c));
+            }
         }
         if (params.containsKey("city")) {
             String city = params.get("city");

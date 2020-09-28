@@ -3,7 +3,6 @@ package com.pl.OrdersManagement.order;
 import com.pl.OrdersManagement.address.Address;
 import com.pl.OrdersManagement.contractor.Contractor;
 import com.pl.OrdersManagement.forwarder.Forwarder;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -17,15 +16,13 @@ import java.util.List;
 public class Order {
 
 	@Id
-	@GeneratedValue(generator = "system-uuid")
-	@GenericGenerator(name = "system-uuid", strategy = "uuid")
-	private String id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
 	@NotNull
 	@ManyToOne
 	private Contractor customer;
 
-	@NotNull
 	@ManyToOne
 	private Contractor carrier;
 
@@ -50,13 +47,13 @@ public class Order {
 	private Currency carrierCurrency;
 
 	@NotNull
-    @ManyToOne
+	@ManyToOne
 	private Forwarder forwarder;
 
 	public Order() {
 	}
 
-	public Order(String id, Contractor customer, Contractor carrier, List<Address> loadingPlace,
+	public Order(long id, Contractor customer, Contractor carrier, List<Address> loadingPlace,
 			List<Address> unloadingPlace, BigDecimal customerPrice, Currency customerCurrency,
             BigDecimal carrierPrice, Currency carrierCurrency, Forwarder forwarder) {
 		this.id = id;
@@ -71,11 +68,11 @@ public class Order {
 		this.forwarder = forwarder;
 	}
 
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -143,11 +140,11 @@ public class Order {
 		this.carrierCurrency = carrierCurrency;
 	}
 
-    public Forwarder getForwarder() {
-        return forwarder;
-    }
+	public Forwarder getForwarder() {
+		return forwarder;
+	}
 
-    public void setForwarder(Forwarder forwarder) {
-        this.forwarder = forwarder;
-    }
+	public void setForwarder(Forwarder forwarder) {
+		this.forwarder = forwarder;
+	}
 }

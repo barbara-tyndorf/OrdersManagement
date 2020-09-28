@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ForwarderRepository extends JpaRepository<Forwarder, Long> {
+public interface ForwarderRepository extends JpaRepository<Forwarder, String> {
 
 	List<Forwarder> findByFullName (String fullName);
+
 }

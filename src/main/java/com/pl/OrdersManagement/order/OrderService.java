@@ -6,9 +6,11 @@ import com.pl.OrdersManagement.address.AddressService;
 import com.pl.OrdersManagement.address.errors.NoAddressFoundException;
 import com.pl.OrdersManagement.contractor.Contractor;
 import com.pl.OrdersManagement.contractor.ContractorRepository;
+import com.pl.OrdersManagement.contractor.errors.NoContractorFoundException;
 import com.pl.OrdersManagement.forwarder.Forwarder;
 import com.pl.OrdersManagement.forwarder.ForwarderRepository;
 import com.pl.OrdersManagement.forwarder.ForwarderService;
+import com.pl.OrdersManagement.forwarder.errors.NoForwarderFoundException;
 import com.pl.OrdersManagement.order.errors.NoOrdersFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @Service
 public class OrderService {
@@ -66,17 +67,24 @@ public class OrderService {
 	public Order updateOrder(String id, Map<String, String> params) {
 		Order order = findById(id);
 
-		if (params.containsKey("customer")) {
-			String name = params.get("customer");
-			Contractor customer = contractorRepository.findByName(name);
+		if (params.containsKey("customerId")) {
+			Long customerId = Long.parseLong(params.get("customerId"));
+			Contractor customer = contractorRepository.findById(customerId)
+					.orElseThrow(() -> {
+						throw new NoContractorFoundException();
+					});
 			order.setCustomer(customer);
 		}
-		if (params.containsKey("carrier")) {
-			String name = params.get("carrier");
-			Contractor carrier = contractorRepository.findByName(name);
+		if (params.containsKey("carrierId")) {
+			Long carrierId = Long.parseLong(params.get("carrierId"));
+			Contractor carrier = contractorRepository.findById(carrierId)
+					.orElseThrow(() -> {
+						throw new NoContractorFoundException();
+					});
 			order.setCustomer(carrier);
 		}
 		if (params.containsKey("loading_place")) {
+			// checking every field if is it different than before
 			List<Address> loadingPlaces = new ArrayList<>();
 			long loadingPlaceId = Long.parseLong(params.get("loading_place"));
 			Address loadAddress = addressRepository.findById(loadingPlaceId)
@@ -111,8 +119,9 @@ public class OrderService {
 		if (params.containsKey("carrierCurrency")) {
 			order.setCarrierCurrency(Currency.getInstance(params.get("carrierCurrency")));
 		}
+
 		if (params.containsKey("forwarderId")) {
-			long forwarderId = Long.parseLong(params.get("forwarderId"));
+			String forwarderId = params.get("forwarderId");
 			Forwarder forwarder = forwarderService.findById(forwarderId);
 			order.setForwarder(forwarder);
 		}
@@ -128,15 +137,19 @@ public class OrderService {
 			orderRepository.findById(id)
 					.ifPresent(foundOrders::add);
 		}
+
+		//FIXME szukanie po nazwie klienta (może być wielu klientów o tej samej nazwie)
 		if (params.containsKey("customer")) {
-			String name = params.get("customer");
-			Contractor customer = contractorRepository.findByName(name);
-			foundOrders.addAll(orderRepository.findByCustomer(customer));
+//			String name = params.get("customer");
+//			Contractor customer = contractorRepository.findByName(name);
+//			foundOrders.addAll(orderRepository.findByCustomer(customer));
 		}
+
+		//FIXME j.w.
 		if (params.containsKey("carrier")) {
-			String name = params.get("carrier");
-			Contractor carrier = contractorRepository.findByName(name);
-			foundOrders.addAll(orderRepository.findByCustomer(carrier));
+//			String name = params.get("carrier");
+//			Contractor carrier = contractorRepository.findByName(name);
+//			foundOrders.addAll(orderRepository.findByCustomer(carrier));
 		}
 		if (params.containsKey("loading_place")) {
 			String city = params.get("loading_place");
@@ -169,11 +182,10 @@ public class OrderService {
 			foundOrders.addAll(orderRepository.findByCarrierCurrency(currency));
 		}
 		if (params.containsKey("forwarderId")) {
-			long id = Long.parseLong(params.get("forwarderId"));
+			String id = params.get("forwarderId");
 			Forwarder forwarder = forwarderRepository.findById(id)
 					.orElseThrow(() -> {
-						//TODO NoForwarderFoundException
-						throw new NoSuchElementException();
+						throw new NoForwarderFoundException();
 					});
 			foundOrders.addAll(orderRepository.findAllByForwarder(forwarder));
 		}

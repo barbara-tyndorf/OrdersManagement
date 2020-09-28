@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class AddressErrorHandler {
 
     @ExceptionHandler(NoAddressFoundException.class)
-    public ResponseEntity<Object> noLocationsFoundException(NoAddressFoundException e) {
+    public ResponseEntity<Object> NoAddressFoundException(NoAddressFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AddressExistException.class)
-    public ResponseEntity<Object> locationExistException(AddressExistException e) {
+    public ResponseEntity<Object> AddressExistException(AddressExistException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

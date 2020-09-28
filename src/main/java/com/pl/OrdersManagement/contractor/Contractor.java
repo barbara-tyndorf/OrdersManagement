@@ -2,6 +2,7 @@ package com.pl.OrdersManagement.contractor;
 
 import com.pl.OrdersManagement.address.Address;
 import com.pl.OrdersManagement.order.Order;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -13,8 +14,9 @@ import java.util.List;
 public class Contractor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    private String id;
 
     @NotNull
     @Size(min = 2)
@@ -41,13 +43,17 @@ public class Contractor {
     public Contractor() {
     }
 
-    public Contractor(String name, Address companyAddress, List<Address> shippingAddress, String vatId, String contactPerson, String phoneNumber) {
+    public Contractor(String id, String name, Address companyAddress,
+            List<Address> shippingAddress, String vatId,
+            String contactPerson, String phoneNumber, List<Order> orders) {
+        this.id = id;
         this.name = name;
         this.companyAddress = companyAddress;
         this.shippingAddress = shippingAddress;
         this.vatId = vatId;
         this.contactPerson = contactPerson;
         this.phoneNumber = phoneNumber;
+        this.orders = orders;
     }
 
     public String getName() {
