@@ -1,150 +1,99 @@
 package com.pl.OrdersManagement.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.pl.OrdersManagement.address.Address;
 import com.pl.OrdersManagement.contractor.Contractor;
+import com.pl.OrdersManagement.enumeration.Currency;
 import com.pl.OrdersManagement.forwarder.Forwarder;
+import lombok.Data;
 
 import javax.persistence.*;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.List;
+import java.util.Objects;
 
+@Data
 @Entity
+@Table(name = "order")
 public class Order {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 
-	@NotNull
+	@Column(name = "customer_price", precision = 21, scale = 2)
+	private BigDecimal customerPrice;
+
+	@Column(name = "carrier_price", precision = 21, scale = 2)
+	private BigDecimal carrierPrice;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "customer_currency")
+	private Currency customerCurrency;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "carrier_currency")
+	private Currency carrierCurrency;
+
 	@ManyToOne
+	@JsonIgnoreProperties("orders")
 	private Contractor customer;
 
 	@ManyToOne
+	@JsonIgnoreProperties("orders")
 	private Contractor carrier;
 
-	@NotNull
-	@OneToMany
-	private List<Address> loadingPlace;
-
-	@NotNull
-	@OneToMany
-	private List<Address> unloadingPlace;
-
-	@Min(0)
-	private BigDecimal customerPrice;
-
-	@NotNull
-	private Currency customerCurrency;
-
-	@Min(0)
-	private BigDecimal carrierPrice;
-
-	@NotNull
-	private Currency carrierCurrency;
-
-	@NotNull
 	@ManyToOne
+	@JsonIgnoreProperties("orders")
+	private Address loadingPlace;
+
+	@ManyToOne
+	@JsonIgnoreProperties("orders")
+	private Address unloadingPlace;
+
+	@ManyToOne
+	@JsonIgnoreProperties("orders")
 	private Forwarder forwarder;
 
-	public Order() {
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Order order = (Order) o;
+		return Objects.equals(id, order.id) &&
+				Objects.equals(customerPrice, order.customerPrice) &&
+				Objects.equals(carrierPrice, order.carrierPrice) &&
+				Objects.equals(customerCurrency, order.customerCurrency) &&
+				Objects.equals(carrierCurrency, order.carrierCurrency) &&
+				Objects.equals(customer, order.customer) &&
+				Objects.equals(carrier, order.carrier) &&
+				Objects.equals(loadingPlace, order.loadingPlace) &&
+				Objects.equals(unloadingPlace, order.unloadingPlace) &&
+				Objects.equals(forwarder, order.forwarder);
 	}
 
-	public Order(long id, Contractor customer, Contractor carrier, List<Address> loadingPlace,
-			List<Address> unloadingPlace, BigDecimal customerPrice, Currency customerCurrency,
-            BigDecimal carrierPrice, Currency carrierCurrency, Forwarder forwarder) {
-		this.id = id;
-		this.customer = customer;
-		this.carrier = carrier;
-		this.loadingPlace = loadingPlace;
-		this.unloadingPlace = unloadingPlace;
-		this.customerPrice = customerPrice;
-		this.customerCurrency = customerCurrency;
-		this.carrierPrice = carrierPrice;
-		this.carrierCurrency = carrierCurrency;
-		this.forwarder = forwarder;
+	@Override
+	public int hashCode() {
+		return Objects
+				.hash(id, customerPrice, carrierPrice, customerCurrency, carrierCurrency, customer, carrier, loadingPlace,
+						unloadingPlace, forwarder);
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public Contractor getCustomer() {
-		return customer;
-	}
-
-	public void setCustomer(Contractor customer) {
-		this.customer = customer;
-	}
-
-	public Contractor getCarrier() {
-		return carrier;
-	}
-
-	public void setCarrier(Contractor carrier) {
-		this.carrier = carrier;
-	}
-
-	public List<Address> getLoadingPlace() {
-		return loadingPlace;
-	}
-
-	public void setLoadingPlace(List<Address> loadingPlace) {
-		this.loadingPlace = loadingPlace;
-	}
-
-	public List<Address> getUnloadingPlace() {
-		return unloadingPlace;
-	}
-
-	public void setUnloadingPlace(List<Address> unloadingPlace) {
-		this.unloadingPlace = unloadingPlace;
-	}
-
-	public BigDecimal getCustomerPrice() {
-		return customerPrice;
-	}
-
-	public void setCustomerPrice(BigDecimal customerPrice) {
-		this.customerPrice = customerPrice;
-	}
-
-	public Currency getCustomerCurrency() {
-		return customerCurrency;
-	}
-
-	public void setCustomerCurrency(Currency customerCurrency) {
-		this.customerCurrency = customerCurrency;
-	}
-
-	public BigDecimal getCarrierPrice() {
-		return carrierPrice;
-	}
-
-	public void setCarrierPrice(BigDecimal carrierPrice) {
-		this.carrierPrice = carrierPrice;
-	}
-
-	public Currency getCarrierCurrency() {
-		return carrierCurrency;
-	}
-
-	public void setCarrierCurrency(Currency carrierCurrency) {
-		this.carrierCurrency = carrierCurrency;
-	}
-
-	public Forwarder getForwarder() {
-		return forwarder;
-	}
-
-	public void setForwarder(Forwarder forwarder) {
-		this.forwarder = forwarder;
+	@Override
+	public String toString() {
+		return "Order{" +
+				"id=" + id +
+				", customerPrice=" + customerPrice +
+				", carrierPrice=" + carrierPrice +
+				", customerCurrency=" + customerCurrency +
+				", carrierCurrency=" + carrierCurrency +
+				", customer=" + customer +
+				", carrier=" + carrier +
+				", loadingPlace=" + loadingPlace +
+				", unloadingPlace=" + unloadingPlace +
+				", forwarder=" + forwarder +
+				'}';
 	}
 }

@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.pl.OrdersManagement.address.AddressService;
-import com.pl.OrdersManagement.address.errors.AddressExistException;
+import com.pl.OrdersManagement.contractor.errors.ContractorExistException;
 import com.pl.OrdersManagement.contractor.errors.NoContractorFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,20 +13,18 @@ import org.springframework.stereotype.Service;
 public class ContractorService {
 
     private final ContractorRepository contractorRepository;
-    private final AddressService addressService;
 
     @Autowired
-    public ContractorService(ContractorRepository contractorRepository, AddressService addressService) {
+    public ContractorService(ContractorRepository contractorRepository) {
         this.contractorRepository = contractorRepository;
-        this.addressService = addressService;
     }
 
     public Contractor add(Contractor contractor) {
         contractorRepository.findAll().stream()
-                .filter((a) -> a.getVatId().equals(contractor.getVatId()))
+                .filter((c) -> c.getVatId().equals(contractor.getVatId()))
                 .findAny()
-                .ifPresent((a) -> {
-                    throw new AddressExistException();
+                .ifPresent((c) -> {
+                    throw new ContractorExistException();
                 });
         return contractorRepository.save(contractor);
     }
@@ -36,7 +33,7 @@ public class ContractorService {
         return contractorRepository.findAll();
     }
 
-    public Contractor findById(long id) {
+    public Contractor findById(String id) {
         return contractorRepository.findById(id)
                 .orElseThrow(() -> {
                     throw new NoContractorFoundException();
@@ -46,14 +43,9 @@ public class ContractorService {
     public List<Contractor> findBy(Map<String, String> params) {
         List<Contractor> foundContractors = new ArrayList<>();
 
-        if (params.containsKey("id")) {
-            Long id = Long.parseLong(params.get("id"));
-            contractorRepository.findById(id)
-                    .ifPresent(foundContractors::add);
-        }
         if (params.containsKey("name")) {
             String name = params.get("name");
-            foundContractors.addAll(contractorRepository.findByName(name));
+            foundContractors.add(contractorRepository.findByName(name));
         }
         if (params.containsKey("vatId")) {
             String vatId = params.get("vatId");
@@ -62,17 +54,14 @@ public class ContractorService {
         return foundContractors;
     }
 
-    public Contractor updateContractor(long id, Map<String, String> params) {
+    public Contractor updateContractor(String id, Map<String, String> params) {
         Contractor contractor = findById(id);
 
         if (params.containsKey("name")) {
             String name = params.get("name");
             contractor.setName(name);
         }
-        //TODO update address without duplication - use addressService
-//        if (params.containsKey("companyAddress")) {
-//            Address companyAddress = addressService.updateAddress(params.get("companyAddress"));
-//        }
+        //TODO update address
 
         if (params.containsKey("vatId")) {
             String vatId = params.get("vatId");
@@ -89,4 +78,9 @@ public class ContractorService {
         return contractorRepository.save(contractor);
     }
 
+    public String remove(String id) {
+        Contractor contractor = findById(id);
+        contractorRepository.delete(contractor);
+        return "Contractor removed successfully!";
+    }
 }

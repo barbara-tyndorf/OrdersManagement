@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,18 +36,23 @@ public class AddressController {
 	}
 
 	@GetMapping("/{id}")
-	public Address getAddressById(@PathVariable long id) {
+	public Address getAddressById(@PathVariable Long id) {
 		return addressService.findById(id);
 	}
 
-	@GetMapping("/find")
-	public List<Address> getAddressBy(@RequestParam(required = false) Map<String, String> params) {
-		return addressService.findBy(params);
+	@GetMapping("/{name}")
+	public List<Address> getAddressByName(@PathVariable String name) {
+		return addressService.findByName(name);
 	}
 
 	@PutMapping
-	public Address update(@RequestParam long id, @Valid @RequestParam Map<String, String> params) {
+	public Address update(@RequestParam Long id, @Valid @RequestParam Map<String, String> params) {
 		return addressService.updateAddress(id, params);
+	}
+
+	@DeleteMapping("/{id}")
+	public String deleteAddress(@PathVariable Long id) {
+		return addressService.remove(id);
 	}
 
 }

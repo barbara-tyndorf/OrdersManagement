@@ -7,6 +7,7 @@ import com.pl.OrdersManagement.address.errors.NoAddressFoundException;
 import com.pl.OrdersManagement.contractor.Contractor;
 import com.pl.OrdersManagement.contractor.ContractorRepository;
 import com.pl.OrdersManagement.contractor.errors.NoContractorFoundException;
+import com.pl.OrdersManagement.enumeration.Currency;
 import com.pl.OrdersManagement.forwarder.Forwarder;
 import com.pl.OrdersManagement.forwarder.ForwarderRepository;
 import com.pl.OrdersManagement.forwarder.ForwarderService;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +25,15 @@ import java.util.Map;
 public class OrderService {
 
 	private final OrderRepository orderRepository;
+
 	private final ContractorRepository contractorRepository;
+
 	private final AddressRepository addressRepository;
+
 	private final AddressService addressService;
+
 	private final ForwarderRepository forwarderRepository;
+
 	private final ForwarderService forwarderService;
 
 	@Autowired
@@ -48,7 +53,8 @@ public class OrderService {
 		return orderRepository.findAll();
 	}
 
-	public Order add(Order order) { return orderRepository.save(order);
+	public Order add(Order order) {
+		return orderRepository.save(order);
 	}
 
 	public Order findById(String id) {
@@ -67,49 +73,43 @@ public class OrderService {
 	public Order updateOrder(String id, Map<String, String> params) {
 		Order order = findById(id);
 
-		if (params.containsKey("customerId")) {
-			Long customerId = Long.parseLong(params.get("customerId"));
-			Contractor customer = contractorRepository.findById(customerId)
-					.orElseThrow(() -> {
-						throw new NoContractorFoundException();
-					});
+		if (params.containsKey("customer")) {
+			String customerName = params.get("customer");
+			Contractor customer = contractorRepository.findByName(customerName);
 			order.setCustomer(customer);
 		}
 		if (params.containsKey("carrierId")) {
-			Long carrierId = Long.parseLong(params.get("carrierId"));
+			String carrierId = params.get("carrierId");
 			Contractor carrier = contractorRepository.findById(carrierId)
 					.orElseThrow(() -> {
 						throw new NoContractorFoundException();
 					});
 			order.setCustomer(carrier);
 		}
-		if (params.containsKey("loading_place")) {
-			// checking every field if is it different than before
-			List<Address> loadingPlaces = new ArrayList<>();
-			long loadingPlaceId = Long.parseLong(params.get("loading_place"));
-			Address loadAddress = addressRepository.findById(loadingPlaceId)
+		if (params.containsKey("loadingPlaceId")) {
+			Long loadingPlaceId = Long.parseLong(params.get("loadingPlaceId"));
+			Address loadingPlace = addressRepository.findById(loadingPlaceId)
 					.orElseThrow(() -> {
 						throw new NoAddressFoundException();
 					});
-			loadingPlaces.add(loadAddress);
-			order.setLoadingPlace(loadingPlaces);
+			order.setLoadingPlace(loadingPlace);
 		}
-		if (params.containsKey("unloading_place")) {
-			List<Address> unloadingPlaces = new ArrayList<>();
-			long unloadingPlaceId = Long.parseLong(params.get("unloading_place"));
-			Address unloadAddress = addressRepository.findById(unloadingPlaceId)
+
+		if (params.containsKey("unloadingPlaceId")) {
+			Long unloadingPlaceId = Long.parseLong(params.get("unloadingPlaceId"));
+			Address unloadingPlace = addressRepository.findById(unloadingPlaceId)
 					.orElseThrow(() -> {
 						throw new NoAddressFoundException();
 					});
-			unloadingPlaces.add(unloadAddress);
-			order.setLoadingPlace(unloadingPlaces);
+			order.setLoadingPlace(unloadingPlace);
 		}
 		if (params.containsKey("customerPrice")) {
-			order.setCustomerPrice(BigDecimal.valueOf(Double.parseDouble(params.get("customerPrice"))));
+			double price = Double.parseDouble(params.get("customerPrice"));
+			order.setCustomerPrice(BigDecimal.valueOf(price));
 		}
 
 		if (params.containsKey("customerCurrency")) {
-			order.setCustomerCurrency(Currency.getInstance(params.get("customerCurrency")));
+			order.setCustomerCurrency(Currency.valueOf(params.get("customerCurrency")));
 		}
 
 		if (params.containsKey("carrierPrice")) {
@@ -117,7 +117,7 @@ public class OrderService {
 		}
 
 		if (params.containsKey("carrierCurrency")) {
-			order.setCarrierCurrency(Currency.getInstance(params.get("carrierCurrency")));
+			order.setCarrierCurrency(Currency.valueOf(params.get("carrierCurrency")));
 		}
 
 		if (params.containsKey("forwarderId")) {
@@ -138,48 +138,32 @@ public class OrderService {
 					.ifPresent(foundOrders::add);
 		}
 
-		//FIXME szukanie po nazwie klienta (może być wielu klientów o tej samej nazwie)
 		if (params.containsKey("customer")) {
-//			String name = params.get("customer");
-//			Contractor customer = contractorRepository.findByName(name);
-//			foundOrders.addAll(orderRepository.findByCustomer(customer));
+			String name = params.get("customer");
+			Contractor customer = contractorRepository.findByName(name);
+			foundOrders.addAll(orderRepository.findByCustomer(customer));
 		}
 
-		//FIXME j.w.
 		if (params.containsKey("carrier")) {
-//			String name = params.get("carrier");
-//			Contractor carrier = contractorRepository.findByName(name);
-//			foundOrders.addAll(orderRepository.findByCustomer(carrier));
+			String name = params.get("carrier");
+			Contractor carrier = contractorRepository.findByName(name);
+			foundOrders.addAll(orderRepository.findByCustomer(carrier));
 		}
 		if (params.containsKey("loading_place")) {
-			String city = params.get("loading_place");
-			List<Address> addresses = addressRepository.findAllByCity(city);
-			for (Address a : addresses) {
-				foundOrders.addAll(orderRepository.findByLoadingPlace(a));
-			}
+			Long addressId = Long.parseLong(params.get("loading_place"));
+			Address address = addressRepository.findById(addressId)
+					.orElseThrow(() -> {
+						throw new NoAddressFoundException();
+					});
+			foundOrders.addAll(orderRepository.findByLoadingPlace(address));
 		}
 		if (params.containsKey("unloading_place")) {
-			String city = params.get("unloading_place");
-			List<Address> addresses = addressRepository.findAllByCity(city);
-			for (Address a : addresses) {
-				foundOrders.addAll(orderRepository.findByLoadingPlace(a));
-			}
-		}
-		if (params.containsKey("customer_price")) {
-			BigDecimal price = BigDecimal.valueOf(Double.parseDouble(params.get("customer_price")));
-			foundOrders.addAll(orderRepository.findByCustomerPrice(price));
-		}
-		if (params.containsKey("customer_currency")) {
-			Currency currency = Currency.getInstance(params.get("customer_currency"));
-			foundOrders.addAll(orderRepository.findByCustomerCurrency(currency));
-		}
-		if (params.containsKey("carrier_price")) {
-			BigDecimal price = BigDecimal.valueOf(Double.parseDouble(params.get("carrier_price")));
-			foundOrders.addAll(orderRepository.findByCarrierPrice(price));
-		}
-		if (params.containsKey("carrier_currency")) {
-			Currency currency = Currency.getInstance(params.get("customer_currency"));
-			foundOrders.addAll(orderRepository.findByCarrierCurrency(currency));
+			Long addressId = Long.parseLong(params.get("unloading_place"));
+			Address address = addressRepository.findById(addressId)
+					.orElseThrow(() -> {
+						throw new NoAddressFoundException();
+					});
+			foundOrders.addAll(orderRepository.findByLoadingPlace(address));
 		}
 		if (params.containsKey("forwarderId")) {
 			String id = params.get("forwarderId");

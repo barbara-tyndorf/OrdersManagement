@@ -1,12 +1,10 @@
 package com.pl.OrdersManagement.contractor;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ContractorRepository extends JpaRepository<Contractor, Long> {
+public interface ContractorRepository extends JpaRepository<Contractor, String> {
 
-    List<Contractor> findByName (String name);
+    Contractor findByName (String name);
 
     Contractor findByVatId (String vatId);
 }

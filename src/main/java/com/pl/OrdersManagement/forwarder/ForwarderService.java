@@ -1,8 +1,11 @@
 package com.pl.OrdersManagement.forwarder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.pl.OrdersManagement.enumeration.Branch;
+import com.pl.OrdersManagement.forwarder.errors.ForwarderExistException;
 import com.pl.OrdersManagement.forwarder.errors.NoForwarderFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,7 +16,7 @@ public class ForwarderService {
 	private final ForwarderRepository forwarderRepository;
 
 	@Autowired
-	public ForwarderService (ForwarderRepository forwarderRepository) {
+	public ForwarderService(ForwarderRepository forwarderRepository) {
 		this.forwarderRepository = forwarderRepository;
 	}
 
@@ -22,6 +25,12 @@ public class ForwarderService {
 	}
 
 	public Forwarder add(Forwarder forwarder) {
+		forwarderRepository.findAll().stream()
+				.filter((f) -> f.getEmail().equals(forwarder.getEmail()))
+				.findAny()
+				.ifPresent((f) -> {
+					throw new ForwarderExistException();
+				});
 		return forwarderRepository.save(forwarder);
 	}
 
@@ -32,9 +41,23 @@ public class ForwarderService {
 				});
 	}
 
-	public List<Forwarder> findByFullName (String fullName) {
-		//TODO find by part of name (fullName.contains provided String);
-		return forwarderRepository.findByFullName(fullName);
+	public List<Forwarder> findBy(Map<String, String> params) {
+		//TODO find by name, lastname, branch;
+		List<Forwarder> foundForwarders = new ArrayList<>();
+		if (params.containsKey("branch")) {
+			Branch branch = Branch.valueOf(params.get("branch"));
+			foundForwarders.addAll(forwarderRepository.findByBranch(branch));
+		}
+		if (params.containsKey("lastName")) {
+			String lastName = params.get("lastName");
+			foundForwarders.addAll(forwarderRepository.findByLastName(lastName));
+		}
+		if (params.containsKey("firstName") && params.containsKey("lastName")) {
+			String firstName = params.get("firstName");
+			String lastName = params.get("lastName");
+			foundForwarders.addAll(forwarderRepository.findByFirstNameAndLastName(firstName, lastName));
+		}
+		return foundForwarders;
 	}
 
 	public String remove(String id) {
@@ -46,10 +69,7 @@ public class ForwarderService {
 	public Forwarder updateForwarder(String id, Map<String, String> params) {
 		Forwarder forwarder = findById(id);
 
-		if (params.containsKey("fullName")) {
-			String fullName = params.get("fullName");
-			forwarder.setFullName(fullName);
-		}
+		//TODO
 
 		return forwarder;
 	}

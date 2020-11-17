@@ -2,119 +2,77 @@ package com.pl.OrdersManagement.address;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Objects;
 
-import com.pl.OrdersManagement.contractor.Contractor;
-import com.pl.OrdersManagement.order.Order;
+import lombok.Data;
 
+@Data
 @Entity
+@Table(name = "address")
 public class Address {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 
-	@NotNull
 	@NotBlank
+	@Column(name = "name")
 	private String name;
 
-	@NotNull
 	@NotBlank
+	@Column(name = "street")
 	private String street;
 
-	private int number;
+	@Column(name = "number")
+	private Integer number;
 
-	@NotNull
 	@NotBlank
 	@Size(min = 2)
+	@Column(name = "zip")
 	private String zip;
 
-	@NotNull
 	@NotBlank
 	@Size(min = 1)
+	@Column(name = "city")
 	private String city;
 
-	@NotNull
 	@NotBlank
-	@Size(min = 2)
+	@Size(min = 1)
+	@Column(name = "country_code")
 	private String countryCode;
 
-	@ManyToOne
-	private Contractor contractor;
-
-	@ManyToOne
-	private Order order;
-
-	public Address() {
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Address address = (Address) o;
+		return Objects.equals(id, address.id) &&
+				Objects.equals(name, address.name) &&
+				Objects.equals(street, address.street) &&
+				Objects.equals(number, address.number) &&
+				Objects.equals(zip, address.zip) &&
+				Objects.equals(city, address.city) &&
+				Objects.equals(countryCode, address.countryCode);
 	}
 
-	public Address(long id, String name, String street, int number, String zip,
-			String city, String countryCode, Contractor contractor, Order order) {
-		this.id = id;
-		this.name = name;
-		this.street = street;
-		this.number = number;
-		this.zip = zip;
-		this.city = city;
-		this.countryCode = countryCode;
-		this.contractor = contractor;
-		this.order = order;
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, street, number, zip, city, countryCode);
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getStreet() {
-		return street;
-	}
-
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
-	public String getZip() {
-		return zip;
-	}
-
-	public void setZip(String zip) {
-		this.zip = zip;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public String getCountryCode() {
-		return countryCode;
-	}
-
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
+	@Override
+	public String toString() {
+		return "Address{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", street='" + street + '\'' +
+				", number=" + number +
+				", zip='" + zip + '\'' +
+				", city='" + city + '\'' +
+				", countryCode='" + countryCode + '\'' +
+				'}';
 	}
 }
