@@ -32,7 +32,7 @@ public class ContractorController {
 	}
 
 	@PostMapping
-	public Contractor add(@RequestBody Contractor contractor) {
+	public Contractor add(@Valid @RequestBody Contractor contractor) {
 		return contractorService.add(contractor);
 	}
 

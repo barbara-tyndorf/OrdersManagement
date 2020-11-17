@@ -35,11 +35,13 @@ public class AddressController {
 		return addressService.add(address);
 	}
 
+	//FIXME
 	@GetMapping("/{id}")
 	public Address getAddressById(@PathVariable Long id) {
 		return addressService.findById(id);
 	}
 
+	//FIXME
 	@GetMapping("/{name}")
 	public List<Address> getAddressByName(@PathVariable String name) {
 		return addressService.findByName(name);
