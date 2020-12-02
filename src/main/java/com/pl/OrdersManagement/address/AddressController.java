@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/address")
+@RequestMapping("/addresses")
 public class AddressController {
 
 	private final AddressService addressService;
@@ -35,16 +35,14 @@ public class AddressController {
 		return addressService.add(address);
 	}
 
-	//FIXME
-	@GetMapping("/{id}")
+	@GetMapping("/id/{id}")
 	public Address getAddressById(@PathVariable Long id) {
 		return addressService.findById(id);
 	}
 
-	//FIXME
-	@GetMapping("/{name}")
-	public List<Address> getAddressByName(@PathVariable String name) {
-		return addressService.findByName(name);
+	@GetMapping("/name/{name}")
+	public List<Address> getAddressBy(@PathVariable Map<String, String> params) {
+		return addressService.findBy(params);
 	}
 
 	@PutMapping

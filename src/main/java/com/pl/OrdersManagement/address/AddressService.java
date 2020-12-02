@@ -3,9 +3,12 @@ package com.pl.OrdersManagement.address;
 import com.pl.OrdersManagement.address.errors.AddressExistException;
 import com.pl.OrdersManagement.address.errors.NoAddressFoundException;
 
+import com.pl.OrdersManagement.enumeration.Branch;
+import com.pl.OrdersManagement.forwarder.Forwarder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +47,18 @@ public class AddressService {
                 });
     }
 
-    public List<Address> findByName(String name) {
-        return addressRepository.findByName(name);
+    public List<Address> findBy(Map<String, String> params) {
+
+        List<Address> foundAddresses = new ArrayList<>();
+        if (params.containsKey("name")) {
+            String name = params.get("name");
+            foundAddresses.addAll(addressRepository.findByName(name));
+        }
+        if (params.containsKey("city")) {
+            String city = params.get("city");
+            foundAddresses.addAll(addressRepository.findByCity(city));
+        }
+        return foundAddresses;
     }
 
     public Address updateAddress(Long id, Map<String, String> params) {

@@ -42,7 +42,6 @@ public class ForwarderService {
 	}
 
 	public List<Forwarder> findBy(Map<String, String> params) {
-		//TODO find by name, lastname, branch;
 		List<Forwarder> foundForwarders = new ArrayList<>();
 		if (params.containsKey("branch")) {
 			Branch branch = Branch.valueOf(params.get("branch"));
