@@ -54,7 +54,7 @@ Then Login. Now you can manage orders database.
 
 ## Relationships in orders database
 
-![uml](uml.png)
+!![uml](https://user-images.githubusercontent.com/55435936/101206683-c20f8980-366f-11eb-88d2-f59bdd354a2c.jpg)
 
 ## Web
 
