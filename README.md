@@ -54,7 +54,7 @@ Then Login. Now you can manage orders database.
 
 ## Relationships in orders database
 
-![image-20201204192838069](C:\Users\barba\IdeaProjects\mój projekt\OrdersManagement\src\main\resources\uml)
+![uml](uml.png)
 
 ## Web
 
