@@ -52,10 +52,17 @@ To manage database in PostgreSQL Adminer please go to http://localhost:8085/ in 
 
 Then Login. Now you can manage orders database.
 
+## Relationships in orders database
+
+![image-20201204192838069](C:\Users\barba\IdeaProjects\mój projekt\OrdersManagement\src\main\resources\uml)
+
 ## Web
 
 You can do every CRUD operations. I recomended to use [SwaggerUI](http://localhost:8080/swagger-ui.html#/).
+
 For **findBy** and **update** methods better way to work with is  [Postman](https://www.postman.com/downloads/).
+
+
 
 Available Methods:
 
@@ -68,7 +75,7 @@ Available Methods:
   - update,
   - delete
 
--  `CONTRACTOR`, `FORWARDER`, `ORDER`:
+- `CONTRACTOR`, `FORWARDER`, `ORDER`:
 
   - getAll,
 
