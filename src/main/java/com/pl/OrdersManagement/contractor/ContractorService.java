@@ -20,12 +20,12 @@ public class ContractorService {
     }
 
     public Contractor add(Contractor contractor) {
-//        contractorRepository.findAll().stream()
-//                .filter((c) -> c.getVatId().equals(contractor.getVatId()))
-//                .findAny()
-//                .ifPresent((c) -> {
-//                    throw new ContractorExistException();
-//                });
+        contractorRepository.findAll().stream()
+                .filter((c) -> c.getVatId().equals(contractor.getVatId()))
+                .findAny()
+                .ifPresent((c) -> {
+                    throw new ContractorExistException();
+                });
         return contractorRepository.save(contractor);
     }
 

@@ -132,12 +132,6 @@ public class OrderService {
 	public List<Order> findBy(Map<String, String> params) {
 		List<Order> foundOrders = new ArrayList<>();
 
-		if (params.containsKey("id")) {
-			String id = params.get("id");
-			orderRepository.findById(id)
-					.ifPresent(foundOrders::add);
-		}
-
 		if (params.containsKey("customer")) {
 			String name = params.get("customer");
 			Contractor customer = contractorRepository.findByName(name);
