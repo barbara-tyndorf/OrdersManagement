@@ -38,7 +38,7 @@ public class OrderController {
 	}
 
 	@GetMapping("/{id}")
-	public Order getOrderById(@Valid @PathVariable String id) {
+	public Order getOrderById(@Valid @PathVariable Long id) {
 		return orderService.findById(id);
 	}
 
@@ -48,12 +48,12 @@ public class OrderController {
 	}
 
 	@PutMapping
-	public Order update(@RequestParam String id, Map<String, String> params) {
+	public Order update(@RequestParam Long id, Map<String, String> params) {
 		return orderService.updateOrder(id, params);
 	}
 
 	@DeleteMapping
-	public String delete(@RequestParam String id) {
+	public String delete(@RequestParam Long id) {
 		return orderService.remove(id);
 	}
 

@@ -3,8 +3,6 @@ package com.pl.OrdersManagement.address;
 import com.pl.OrdersManagement.address.errors.AddressExistException;
 import com.pl.OrdersManagement.address.errors.NoAddressFoundException;
 
-import com.pl.OrdersManagement.enumeration.Branch;
-import com.pl.OrdersManagement.forwarder.Forwarder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +26,7 @@ public class AddressService {
                 .filter((a) -> a.getCity().equals(address.getCity()))
                 .filter((a) -> a.getZip().equals(address.getZip()))
                 .filter((a) -> a.getStreet().equals(address.getStreet()))
-                .filter((a) -> a.getNumber() == address.getNumber())
+                .filter((a) -> a.getNumber().equals(address.getNumber()))
                 .findAny()
                 .ifPresent((a) -> {
                     throw new AddressExistException();

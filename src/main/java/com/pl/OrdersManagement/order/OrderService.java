@@ -57,20 +57,20 @@ public class OrderService {
 		return orderRepository.save(order);
 	}
 
-	public Order findById(String id) {
+	public Order findById(Long id) {
 		return orderRepository.findById(id)
 				.orElseThrow(() -> {
 					throw new NoOrdersFoundException();
 				});
 	}
 
-	public String remove(String id) {
+	public String remove(Long id) {
 		Order order = findById(id);
 		orderRepository.delete(order);
 		return "Order removed successfully!";
 	}
 
-	public Order updateOrder(String id, Map<String, String> params) {
+	public Order updateOrder(Long id, Map<String, String> params) {
 		Order order = findById(id);
 
 		if (params.containsKey("customer")) {
@@ -168,5 +168,13 @@ public class OrderService {
 			foundOrders.addAll(orderRepository.findAllByForwarder(forwarder));
 		}
 		return foundOrders;
+	}
+
+	public BigDecimal getProfit(Long id) {
+		Order order = findById(id);
+		BigDecimal customerPrice = order.getCustomerPrice();
+		BigDecimal carrierPrice = order.getCarrierPrice();
+		BigDecimal profit = customerPrice.subtract(carrierPrice);
+		return profit;
 	}
 }

@@ -1,12 +1,15 @@
 package com.pl.OrdersManagement.forwarder;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.pl.OrdersManagement.enumeration.Branch;
 import com.pl.OrdersManagement.forwarder.errors.ForwarderExistException;
 import com.pl.OrdersManagement.forwarder.errors.NoForwarderFoundException;
+import com.pl.OrdersManagement.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +17,12 @@ import org.springframework.stereotype.Service;
 public class ForwarderService {
 
 	private final ForwarderRepository forwarderRepository;
+	private final OrderService orderService;
 
 	@Autowired
-	public ForwarderService(ForwarderRepository forwarderRepository) {
+	public ForwarderService(ForwarderRepository forwarderRepository, OrderService orderService) {
 		this.forwarderRepository = forwarderRepository;
+		this.orderService = orderService;
 	}
 
 	public List<Forwarder> getAll() {
@@ -71,6 +76,20 @@ public class ForwarderService {
 		//TODO
 
 		return forwarder;
+	}
+
+	public BigDecimal getProfit(String id) {
+		Forwarder forwarder = findById(id);
+		List<Long> ordersIds = forwarder.getOrders().stream()
+				.map((o) -> o.getId())
+				.collect(Collectors.toList());
+
+		BigDecimal profit = BigDecimal.ZERO;
+		for (int i = 0; i < ordersIds.size(); i++) {
+			BigDecimal orderProfit = orderService.getProfit(ordersIds.get(i));
+			profit = profit.add(orderProfit);
+		}
+		return profit;
 	}
 
 }
